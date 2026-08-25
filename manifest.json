@@ -1,0 +1,42 @@
+{
+  "id": "/space-war/",
+  "name": "Voyager 1 Cosmic Game",
+  "short_name": "Voyager 1",
+  "description": "لعبة Voyager 1 للحروب الفضائية والظواهر الكونية مع خصائص ليزر يحيى والتفجير الصوتي",
+  "start_url": "/space-war/",
+  "scope": "/space-war/",
+  "display": "standalone",
+  "background_color": "#010105",
+  "theme_color": "#010105",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/Voyager 1_pwabuilder_score.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/Voyager2.jpeg",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/Voyager3.jpeg",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "الشاشة الرئيسية للعبة والمجرات"
+    },
+    {
+      "src": "images/Voyager4.jpeg",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "معركة الفضاء مع الثقوب السوداء"
+    }
+  ]
+}

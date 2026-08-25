@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Voyager 1: الظواهر الكونية العشوائية وليزر يحيى 🚀⚡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        body {
+            background-color: #010105;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: #020208;
+            box-shadow: 0 0 35px rgba(255, 0, 85, 0.6);
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        .ui-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            background: rgba(10, 5, 25, 0.85);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 85, 0.4);
+        }
+        #shieldBarContainer {
+            width: 60px;
+            height: 8px;
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid #ff0055;
+            border-radius: 5px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        #shieldBar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #ff0055);
+            transition: width 0.2s;
+        }
+
+        /* شريط معلومات الظواهر العلمية العشوائية */
+        #astroPhenomenonInfo {
+            position: absolute;
+            top: 78px;
+            left: 10px;
+            right: 10px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 10px;
+            z-index: 70;
+            display: none;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        #voiceStatus {
+            position: absolute;
+            top: 130px;
+            right: 10px;
+            background: rgba(255, 0, 85, 0.35);
+            border: 1px solid #ff0055;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            z-index: 60;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+
+        #superWeaponTimer {
+            position: absolute;
+            top: 165px;
+            right: 10px;
+            background: linear-gradient(90deg, #ff00d8, #00ffff);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 60;
+            display: none;
+            box-shadow: 0 0 15px #ff00d8;
+        }
+
+        #abilitiesPanel {
+            position: absolute;
+            bottom: 15px;
+            right: 12px;
+            left: 12px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .ability-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #4c1d95, #831843);
+            border: 1.5px solid #ff0055;
+            color: #fff;
+            padding: 10px 2px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 10px;
+            box-shadow: 0 0 8px rgba(255, 0, 85, 0.4);
+            cursor: pointer;
+            text-align: center;
+        }
+        #yahyaManualBtn {
+            background: linear-gradient(135deg, #ff00d8, #7e22ce);
+            border-color: #00ffff;
+        }
+
+        .modal-overlay {
+            display: flex;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 2, 12, 0.96);
+            z-index: 200;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .galaxy-preview {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            margin: 6px 0;
+            border: 3px solid #ff0055;
+            box-shadow: 0 0 25px #ff0055;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .catalog-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            width: 100%;
+            max-width: 360px;
+            margin: 4px 0;
+            font-size: 10px;
+            text-align: right;
+            line-height: 1.4;
+        }
+        .catalog-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding: 3px 0;
+        }
+
+        .btn-action {
+            background: linear-gradient(90deg, #ff0055, #a855f7);
+            border: none; color: #fff;
+            padding: 9px 20px; border-radius: 8px; font-weight: bold;
+            cursor: pointer; margin-top: 8px; font-size: 11px;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+            touch-action: manipulation;
+        }
+
+        #timerCountdown {
+            font-size: 18px;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameContainer">
+    <div id="ui">
+        <div class="ui-row">
+            <div>المجرة (<span id="galaxyIndexVal">1</span>/20): <span id="galaxyName" style="color:#ff0055;">درب التبانة</span> 🌌</div>
+            <div>الوقت: <span id="timerVal" style="color:#ffcc00;">45</span>ث</div>
+        </div>
+        <div class="ui-row">
+            <div>الدرع: <div id="shieldBarContainer"><div id="shieldBar"></div></div></div>
+            <div>السلاح: <span id="gunLevel" style="color:#00ffff;">طلقات (Lvl 1)</span></div>
+            <div>النقاط: <span id="scoreVal" style="color:#00ff88;">0</span></div>
+        </div>
+    </div>
+
+    <!-- نافذة شرح الظواهر الفلكية العشوائية -->
+    <div id="astroPhenomenonInfo">
+        <b id="astroTitle" style="color:#00ffff; font-size:11px;"></b><br>
+        <span id="astroDesc" style="color:#e2e8f0;"></span>
+    </div>
+
+    <div id="voiceStatus">🎙️ قل "يحيى" أو اضغط على الزر بالأسفل!</div>
+    <div id="superWeaponTimer">⚡ ليزر يحيى تلقائي: <span id="superTimeLeft">5</span>s</div>
+
+    <div id="abilitiesPanel">
+        <button id="yahyaManualBtn" class="ability-btn" onclick="activateYahyaLaser()">⚡ ليزر يحيى</button>
+        <button id="boomBtn" class="ability-btn" onclick="triggerVoiceBoom()">💥 تفجير BOOM</button>
+    </div>
+
+    <canvas id="spaceCanvas"></canvas>
+
+    <!-- شاشة الخريطة والموسوعة الفلكية -->
+    <div id="galaxyMapModal" class="modal-overlay">
+        <h3 style="color:#ff0055; font-size:11px;">⚠️ ترقب الظواهر الفلكية العشوائية في كل مرحلة!</h3>
+        <h2 id="mapGalaxyTitle" style="color:#00ffff; font-size:15px; margin-top:2px;">المجرة 1: درب التبانة</h2>
+        <div id="galaxyCircle" class="galaxy-preview"></div>
+
+        <div class="catalog-box">
+            <div class="catalog-item"><span>نوع المجرة:</span> <b id="infoType" style="color:#00ffff;">حلزونية شريطية</b></div>
+            <div class="catalog-item"><span>البعد عن الأرض:</span> <b id="infoDistance" style="color:#ffcc00;">0 سنة ضوئية</b></div>
+            <div class="catalog-item"><span>القطر التقديري:</span> <b id="infoSize" style="color:#00ff88;">105,700 سنة ضوئية</b></div>
+            <div class="catalog-item"><span>احتمالية الظواهر:</span> <b style="color:#a855f7;">عشوائية (ثقوب سوداء، مستعرات، نفق دودي)</b></div>
+        </div>
+
+        <div id="timerCountdown">بدء الإطلاق خلال: 5</div>
+        <button id="startGalaxyBtn" class="btn-action">انطلق الآن 🚀</button>
+    </div>
+
+    <!-- شاشة الخسارة -->
+    <div id="gameOverModal" class="modal-overlay" style="display:none;">
+        <h2 style="color:#ff0055; font-size:17px;">⚠️ تدمرت المركبة!</h2>
+        <p style="font-size:10px; color:#ccc; margin-top:4px;">احذر جاذبية الثقوب السوداء المفاجئة وانفجارات السوبرنوفا!</p>
+        <p style="margin-top: 8px; color: #ff0055;">النتيجة: <span id="finalScore">0</span> نقطة</p>
+        <button id="restartBtn" class="btn-action">إعادة المحاولة 🚀</button>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('spaceCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreValEl = document.getElementById('scoreVal');
+    const gunLevelEl = document.getElementById('gunLevel');
+    const galaxyNameEl = document.getElementById('galaxyName');
+    const galaxyIndexVal = document.getElementById('galaxyIndexVal');
+    const timerValEl = document.getElementById('timerVal');
+    const shieldBar = document.getElementById('shieldBar');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const superWeaponTimer = document.getElementById('superWeaponTimer');
+    const superTimeLeft = document.getElementById('superTimeLeft');
+
+    const astroPhenomenonInfo = document.getElementById('astroPhenomenonInfo');
+    const astroTitle = document.getElementById('astroTitle');
+    const astroDesc = document.getElementById('astroDesc');
+
+    const galaxyMapModal = document.getElementById('galaxyMapModal');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const startGalaxyBtn = document.getElementById('startGalaxyBtn');
+    const timerCountdownEl = document.getElementById('timerCountdown');
+
+    // 🔊 محرك الأصوات
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+
+        if (type === 'shoot') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.07);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.07);
+        } else if (type === 'enemy_shoot') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'laser') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(950, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(350, audioCtx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+        } else if (type === 'boom') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+        } else if (type === 'hit') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+        } else if (type === 'warp') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+    }
+
+    // 🎙️ التحكم الصوتي
+    let isSuperLaserActive = false;
+    let superWeaponInterval = null;
+
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (window.SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.lang = 'ar-SA';
+        recognition.interimResults = true;
+
+        recognition.onresult = (e) => {
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+                let text = e.results[i][0].transcript.trim().toLowerCase();
+                if (text.includes('يحيى') || text.includes('يحي') || text.includes('yahya') || text.includes('yehia') || text.includes('yahia')) {
+                    activateYahyaLaser();
+                } else if (text.includes('boom') || text.includes('بوم')) {
+                    triggerVoiceBoom();
+                }
+            }
+        };
+
+        recognition.onend = () => { try { recognition.start(); } catch(e){} };
+        try { recognition.start(); } catch(err) {}
+    }
+
+    function activateYahyaLaser() {
+        if (isGameOver || isGamePausedForMap || isSuperLaserActive) return;
+
+        isSuperLaserActive = true;
+        let timeLeft = 5;
+        superTimeLeft.innerText = timeLeft;
+        superWeaponTimer.style.display = 'block';
+
+        voiceStatus.style.background = '#ff00d8';
+        voiceStatus.innerText = '⚡ ليزر يحيى فعال ويلتهم الأعداء ونيارنهم!';
+
+        superWeaponInterval = setInterval(() => {
+            timeLeft--;
+            superTimeLeft.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(superWeaponInterval);
+                isSuperLaserActive = false;
+                superWeaponTimer.style.display = 'none';
+                voiceStatus.style.background = 'rgba(255, 0, 85, 0.35)';
+                voiceStatus.innerText = '🎙️ قل "يحيى" أو اضغط على الزر بالأسفل!';
+            }
+        }, 1000);
+    }
+
+    function triggerVoiceBoom() {
+        if (isGameOver || isGamePausedForMap) return;
+        playSound('boom');
+        shakeScreen = 25;
+        aliens.forEach(a => {
+            createExplosion(a.x, a.y, '#ff0055');
+            score += 25;
+        });
+        aliens = [];
+        enemyBullets = [];
+        scoreValEl.innerText = score;
+    }
+
+    let isGameOver = false;
+    let isGamePausedForMap = true;
+    let score = 0;
+    let shield = 100;
+    let shakeScreen = 0;
+
+    let shipX = 0, shipY = 0;
+    let isTouching = false;
+
+    let mainGunLevel = 1;
+    let lastGunFire = 0;
+
+    let stars = [];
+    for(let i=0; i<80; i++) {
+        stars.push({x: Math.random()*500, y: Math.random()*800, size: Math.random()*2+1, speed: Math.random()*5+3});
+    }
+
+    // 🌌 بيانات تفصيلية عن المجرات
+    const galaxyData = [
+        { name: "درب التبانة", type: "حلزونية شريطية", dist: "0 سنة ضوئية", size: "105,700 سنة ضوئية" },
+        { name: "أندروميدا M31", type: "حلزونية عملاقة", dist: "2.5 مليون سنة ضوئية", size: "220,000 سنة ضوئية" },
+        { name: "المثلث M33", type: "حلزونية مقيدة", dist: "2.73 مليون سنة ضوئية", size: "60,000 سنة ضوئية" },
+        { name: "الصومعة M104", type: "حلزونية بانتفاخ مضيء", dist: "31.1 مليون سنة ضوئية", size: "50,000 سنة ضوئية" },
+        { name: "الدوامة M51", type: "حلزونية تفاعلية", dist: "23 مليون سنة ضوئية", size: "76,000 سنة ضوئية" },
+        { name: "عين القط NGC 4631", type: "مختلطة وغير منتظمة", dist: "25 مليون سنة ضوئية", size: "140,000 سنة ضوئية" },
+        { name: "عجلة العربة", type: "مجرة حلقة تصادمية", dist: "500 مليون سنة ضوئية", size: "150,000 سنة ضوئية" },
+        { name: "سحابة مجلان الكبرى", type: "قزمة غير منتظمة", dist: "163,000 سنة ضوئية", size: "14,000 سنة ضوئية" },
+        { name: "السيجار M82", type: "مجرة نجمية انفجارية", dist: "12 مليون سنة ضوئية", size: "37,000 سنة ضوئية" },
+        { name: "الشرغوف Arp 188", type: "حلزونية بذيل نجمي", dist: "420 مليون سنة ضوئية", size: "280,000 سنة ضوئية" },
+        { name: "كويلا NGC 6872", type: "حلزونية عملاقة", dist: "212 مليون سنة ضوئية", size: "522,000 سنة ضوئية" },
+        { name: "الأنطولوجية IC 1101", type: "أهليجية إشعاعية فائقة", dist: "1.04 مليار سنة ضوئية", size: "6,000,000 سنة ضوئية" },
+        { name: "المرأة المسلسلة B", type: "قزمة أهليجية", dist: "2.9 مليون سنة ضوئية", size: "9,800 سنة ضوئية" },
+        { name: "أبيسيلون 89", type: "حلزونية ذات خطوط غبارية", dist: "55 مليون سنة ضوئية", size: "85,000 سنة ضوئية" },
+        { name: "سبيكا 9", type: "مجرة عدسية", dist: "67 مليون سنة ضوئية", size: "110,000 سنة ضوئية" },
+        { name: "سيغناس A", type: "مجرة راديوية نشطة", dist: "760 مليون سنة ضوئية", size: "500,000 سنة ضوئية" },
+        { name: "فيلارد X", type: "عنقودية تضامنية", dist: "1.2 مليار سنة ضوئية", size: "800,000 سنة ضوئية" },
+        { name: "أورايون القزمة", type: "مجرة قزمة معزولة", dist: "3.4 مليون سنة ضوئية", size: "5,000 سنة ضوئية" },
+        { name: "نيبيرا الكبرى", type: "حلزونية مظلمة", dist: "2.1 مليار سنة ضوئية", size: "950,000 سنة ضوئية" },
+        { name: "أوميقا 20", type: "مجرة مركزية فائقة", dist: "3.5 مليار سنة ضوئية", size: "2,000,000 سنة ضوئية" }
+    ];
+
+    let currentGalaxyIndex = 0;
+    let galaxyTimeLeft = 45;
+    let timerInterval = null;
+    let catalogAutoTimer = null;
+    let catalogSecondsLeft = 5;
+
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        if (shipX === 0) {
+            shipX = canvas.width / 2;
+            shipY = canvas.height - 120;
+        }
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function showGalaxyMap(index) {
+        isGamePausedForMap = true;
+        clearInterval(catalogAutoTimer);
+        catalogSecondsLeft = 5;
+
+        galaxyIndexVal.innerText = index + 1;
+        let gData = galaxyData[index];
+        document.getElementById('mapGalaxyTitle').innerText = `المجرة ${index + 1}: ${gData.name}`;
+        document.getElementById('infoType').innerText = gData.type;
+        document.getElementById('infoDistance').innerText = gData.dist;
+        document.getElementById('infoSize').innerText = gData.size;
+
+        timerCountdownEl.innerText = `بدء الإطلاق خلال: ${catalogSecondsLeft}`;
+        galaxyMapModal.style.display = 'flex';
+
+        catalogAutoTimer = setInterval(() => {
+            catalogSecondsLeft--;
+            timerCountdownEl.innerText = `بدء الإطلاق خلال: ${catalogSecondsLeft}`;
+            if (catalogSecondsLeft <= 0) {
+                clearInterval(catalogAutoTimer);
+                startCurrentGalaxy();
+            }
+        }, 1000);
+    }
+
+    startGalaxyBtn.onclick = () => {
+        clearInterval(catalogAutoTimer);
+        startCurrentGalaxy();
+    };
+
+    function startCurrentGalaxy() {
+        galaxyMapModal.style.display = 'none';
+        isGamePausedForMap = false;
+        galaxyNameEl.innerText = galaxyData[currentGalaxyIndex].name;
+        
+        // تفريغ كافة الظواهر عند بدء كل مرحلة
+        activeBlackHole = null;
+        activeWormhole = null;
+        activeSupernova = null;
+        activeCosmicStorm = null;
+
+        startGalaxyTimer();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function startGalaxyTimer() {
+        clearInterval(timerInterval);
+        galaxyTimeLeft = 45;
+        timerValEl.innerText = galaxyTimeLeft;
+
+        timerInterval = setInterval(() => {
+            if (isGameOver || isGamePausedForMap) return;
+            galaxyTimeLeft--;
+            timerValEl.innerText = galaxyTimeLeft;
+            
+            // 🎲 محرك العشوائية للظواهر الفلكية (كل ثانية توجد نسبة لظهور ظاهرة)
+            triggerRandomAstronomicalEvents();
+
+            if (galaxyTimeLeft <= 0) nextGalaxy();
+        }, 1000);
+    }
+
+    function nextGalaxy() {
+        if (currentGalaxyIndex < 19) {
+            currentGalaxyIndex++;
+            shield = Math.min(100, shield + 25);
+            shieldBar.style.width = shield + '%';
+            showGalaxyMap(currentGalaxyIndex);
+        } else {
+            alert("🎉 قهرت جميع أساطيل الفضائيين وعبرت الظواهر الكونية بنجاح!");
+        }
+    }
+
+    // 🌌 🔭 محرك الظواهر العلمية العشوائية والمعلومات التثقيفية
+    let activeBlackHole = null;
+    let activeWormhole = null;
+    let activeSupernova = null;
+    let activeCosmicStorm = null;
+    let infoTimer = null;
+
+    function displayAstronomicalNotice(title, description) {
+        astroTitle.innerText = title;
+        astroDesc.innerText = description;
+        astroPhenomenonInfo.style.display = 'block';
+        clearTimeout(infoTimer);
+        infoTimer = setTimeout(() => {
+            astroPhenomenonInfo.style.display = 'none';
+        }, 4500);
+    }
+
+    function triggerRandomAstronomicalEvents() {
+        let rand = Math.random();
+
+        // 1. ثقب أسود عشوائي (فرصة 12%)
+        if (!activeBlackHole && rand < 0.12) {
+            activeBlackHoles = {
+                x: Math.random() * (canvas.width - 120) + 60,
+                y: Math.random() * (canvas.height * 0.4) + 120,
+                radius: 30,
+                angle: 0,
+                duration: 9 // يختفي بعد 9 ثوانٍ
+            };
+            displayAstronomicalNotice("🌀 ظاهرة: ثقب أسود عملاق (Black Hole)", "منطقة في الفضاء ذات جاذبية فائقة تجذب كل شيء حتى الضوء! تبتعد عن مركزها فوراً.");
+        }
+
+        // 2. ثقب دودي عشوائي للعبور الفوري (فرصة 8%)
+        if (!activeWormhole && rand > 0.30 && rand < 0.38) {
+            activeWormhole = {
+                x: Math.random() * (canvas.width - 120) + 60,
+                y: Math.random() * (canvas.height * 0.3) + 200,
+                radius: 22,
+                angle: 0,
+                duration: 7
+            };
+            displayAstronomicalNotice("🌌 ظاهرة: نفق دودي كوني (Wormhole)", "ممر نسيجي في الزمان والمكان! ادخل فيه للانتقال فوراً للمرحلة/المحاولة التالية.");
+        }
+
+        // 3. مستعر أعظم / سوبرنوفا كوني (فرصة 10%)
+        if (!activeSupernova && rand > 0.50 && rand < 0.60) {
+            activeSupernova = {
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height * 0.4) + 100,
+                radius: 5,
+                maxRadius: 110,
+                damage: 20
+            };
+            displayAstronomicalNotice("💥 ظاهرة: مستعر أعظم (Supernova Blast)", "انفجار نجمي هائل يطلق إشعاعات وموجات صدمية في الفضاء! ابتعد عن النطاق المشتعل.");
+        }
+
+        // 4. عاصفة أشعة كونية (فرصة 10%)
+        if (!activeCosmicStorm && rand > 0.75 && rand < 0.85) {
+            activeCosmicStorm = {
+                y: Math.random() * (canvas.height - 200) + 100,
+                height: 40,
+                duration: 6
+            };
+            displayAstronomicalNotice("⚡ ظاهرة: عاصفة الأشعة الكونية (Cosmic Ray Storm)", "جسيمات عالية الطاقة تسير بأسلوب موجي وتسبب خبراً تشويشياً لدرع المركبة.");
+        }
+
+        // تقليل مدة الظواهر المجهزة
+        if (activeBlackHole) {
+            activeBlackHole.duration--;
+            if (activeBlackHole.duration <= 0) activeBlackHole = null;
+        }
+        if (activeWormhole) {
+            activeWormhole.duration--;
+            if (activeWormhole.duration <= 0) activeWormhole = null;
+        }
+        if (activeCosmicStorm) {
+            activeCosmicStorm.duration--;
+            if (activeCosmicStorm.duration <= 0) activeCosmicStorm = null;
+        }
+    }
+
+    const updateShipPosition = (clientX, clientY) => {
+        let rect = canvas.getBoundingClientRect();
+        shipX = Math.max(20, Math.min(canvas.width - 20, clientX - rect.left));
+        shipY = Math.max(40, Math.min(canvas.height - 60, clientY - rect.top));
+    };
+
+    canvas.addEventListener('touchstart', (e) => { if (!isGameOver && !isGamePausedForMap) { isTouching = true; updateShipPosition(e.touches[0].clientX, e.touches[0].clientY); } }, {passive: true});
+    canvas.addEventListener('touchmove', (e) => { if (isTouching) updateShipPosition(e.touches[0].clientX, e.touches[0].clientY); }, {passive: true});
+    canvas.addEventListener('touchend', () => isTouching = false);
+    canvas.addEventListener('mousedown', (e) => { isTouching = true; updateShipPosition(e.clientX, e.clientY); });
+    canvas.addEventListener('mousemove', (e) => { if(isTouching) updateShipPosition(e.clientX, e.clientY); });
+    canvas.addEventListener('mouseup', () => isTouching = false);
+
+    let aliens = [], particles = [], gifts = [], bullets = [], enemyBullets = [];
+
+    function spawnAlien() {
+        if (isGameOver || isGamePausedForMap) return;
+
+        const types = ['saucer', 'zigzag_saucer', 'kamikaze_saucer', 'heavy_saucer'];
+        let t = types[Math.floor(Math.random() * types.length)];
+        let hp = 40 + currentGalaxyIndex * 12;
+
+        aliens.push({
+            x: Math.random() * (canvas.width - 80) + 40,
+            y: -50,
+            type: t,
+            hp: hp,
+            maxHp: hp,
+            radius: t === 'heavy_saucer' ? 26 : 18,
+            speed: (t === 'kamikaze_saucer' ? 4.5 : 2.5) + (currentGalaxyIndex * 0.12),
+            sineOffset: Math.random() * 100,
+            lastShot: Date.now()
+        });
+    }
+    setInterval(spawnAlien, 500);
+
+    function dropGift(x, y) {
+        if (Math.random() < 0.45) {
+            gifts.push({ x: x, y: y, type: Math.random() < 0.5 ? 'main_gun' : 'shield_repair', radius: 12, speed: 2.5 });
+        }
+    }
+
+    function createExplosion(x, y, color) {
+        playSound('hit');
+        for (let i = 0; i < 12; i++) {
+            particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10, life: 15, color: color || '#ff0055' });
+        }
+    }
+
+    function takeDamage(amt) {
+        shield = Math.max(0, shield - amt);
+        shieldBar.style.width = shield + '%';
+        shakeScreen = 12;
+        if (shield <= 0) {
+            isGameOver = true;
+            document.getElementById('finalScore').innerText = score;
+            gameOverModal.style.display = 'flex';
+        }
+    }
+
+    document.getElementById('restartBtn').onclick = () => {
+        shield = 100; score = 0; mainGunLevel = 1; currentGalaxyIndex = 0;
+        shieldBar.style.width = '100%'; scoreValEl.innerText = '0';
+        gunLevelEl.innerText = 'طلقات (Lvl 1)';
+        aliens = []; gifts = []; bullets = []; enemyBullets = [];
+        activeBlackHole = null; activeWormhole = null; activeSupernova = null; activeCosmicStorm = null;
+        isGameOver = false; gameOverModal.style.display = 'none';
+        showGalaxyMap(0);
+    };
+
+    function fireMainGun() {
+        playSound('shoot');
+        let count = Math.min(5, mainGunLevel);
+        for(let i=0; i<count; i++) {
+            let offset = (i - (count-1)/2) * 8;
+            bullets.push({x: shipX + offset, y: shipY - 15, vx: offset*0.12, vy: -14, damage: 16 + mainGunLevel*5});
+        }
+    }
+
+    showGalaxyMap(0);
+
+    function gameLoop() {
+        if (isGameOver || isGamePausedForMap) return;
+
+        ctx.save();
+        if (shakeScreen > 0 || isSuperLaserActive) {
+            ctx.translate((Math.random()-0.5)*(shakeScreen || 4), (Math.random()-0.5)*(shakeScreen || 4));
+            shakeScreen *= 0.88;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let now = Date.now();
+
+        // خلفية النجوم
+        ctx.fillStyle = '#00ffff';
+        for(let s of stars) {
+            s.y += s.speed;
+            if (s.y > canvas.height) s.y = 0;
+            ctx.fillRect(s.x, s.y, s.size, s.size * 2);
+        }
+
+        // 🌀 1. الثقب الأسود العشوائي الموقت
+        if (activeBlackHole) {
+            let bh = activeBlackHole;
+            bh.angle += 0.05;
+            ctx.save();
+            ctx.translate(bh.x, bh.y);
+            ctx.rotate(bh.angle);
+
+            let grad = ctx.createRadialGradient(0, 0, 5, 0, 0, bh.radius);
+            grad.addColorStop(0, '#000000');
+            grad.addColorStop(0.7, '#4c1d95');
+            grad.addColorStop(1, 'rgba(255, 0, 85, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(0, 0, bh.radius * 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath(); ctx.arc(0, 0, bh.radius * 0.6, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+
+            let dx = bh.x - shipX, dy = bh.y - shipY;
+            let dist = Math.hypot(dx, dy);
+            if (dist < 170) {
+                shipX += (dx / dist) * 1.8;
+                shipY += (dy / dist) * 1.8;
+                if (dist < bh.radius) takeDamage(0.6);
+            }
+        }
+
+        // 🌌 2. الثقب الدودي العشوائي (الانتقال السريع للمحاولة التالية)
+        if (activeWormhole) {
+            let wh = activeWormhole;
+            wh.angle -= 0.08;
+            ctx.save();
+            ctx.translate(wh.x, wh.y);
+            ctx.rotate(wh.angle);
+
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(0, 0, wh.radius, 0, Math.PI*2); ctx.stroke();
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+            ctx.fill();
+            ctx.restore();
+
+            if (Math.hypot(wh.x - shipX, wh.y - shipY) < wh.radius + 10) {
+                playSound('warp');
+                score += 200;
+                scoreValEl.innerText = score;
+                activeWormhole = null;
+                nextGalaxy();
+                return;
+            }
+        }
+
+        // 💥 3. موجة مستعر أعظم (السوبرنوفا العشوائي)
+        if (activeSupernova) {
+            let sn = activeSupernova;
+            sn.radius += 3;
+
+            ctx.strokeStyle = 'rgba(255, 0, 85, ' + (1 - sn.radius / sn.maxRadius) + ')';
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.arc(sn.x, sn.y, sn.radius, 0, Math.PI * 2); ctx.stroke();
+
+            if (Math.hypot(sn.x - shipX, sn.y - shipY) < sn.radius && sn.radius < sn.maxRadius * 0.8) {
+                takeDamage(0.3);
+            }
+
+            if (sn.radius >= sn.maxRadius) activeSupernova = null;
+        }
+
+        // ⚡ 4. عاصفة الأشعة الكونية العشوائية
+        if (activeCosmicStorm) {
+            let cs = activeCosmicStorm;
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+            ctx.fillRect(0, cs.y, canvas.width, cs.height);
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, cs.y, canvas.width, cs.height);
+
+            if (shipY > cs.y && shipY < cs.y + cs.height) {
+                takeDamage(0.2);
+            }
+        }
+
+        // ⚡ حالة تفعيل ليزر "يحيى"
+        if (isSuperLaserActive) {
+            if (Math.random() < 0.3) playSound('laser');
+
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 0, 216, 0.35)';
+            ctx.fillRect(shipX - 30, 0, 60, shipY);
+
+            ctx.strokeStyle = '#00ffff'; 
+            ctx.lineWidth = 14; 
+            ctx.shadowBlur = 25; 
+            ctx.shadowColor = '#00ffff';
+            ctx.beginPath(); 
+            ctx.moveTo(shipX, shipY - 10); 
+            ctx.lineTo(shipX, 0); 
+            ctx.stroke();
+            ctx.restore();
+
+            aliens.forEach(a => {
+                if (Math.abs(a.x - shipX) < 40) {
+                    a.hp -= 12;
+                    createExplosion(a.x, a.y, '#00ffff');
+                }
+            });
+
+            for (let ebIdx = enemyBullets.length - 1; ebIdx >= 0; ebIdx--) {
+                if (Math.abs(enemyBullets[ebIdx].x - shipX) < 35) {
+                    enemyBullets.splice(ebIdx, 1);
+                }
+            }
+        } 
+        else if (isTouching) {
+            if (now - lastGunFire > 110) {
+                fireMainGun();
+                lastGunFire = now;
+            }
+        }
+
+        // 🔫 حركة طلقات اللاعب
+        for (let bIdx = bullets.length - 1; bIdx >= 0; bIdx--) {
+            let b = bullets[bIdx];
+            b.x += b.vx; b.y += b.vy;
+
+            ctx.fillStyle = '#00ffff';
+            ctx.beginPath(); ctx.arc(b.x, b.y, 3.5, 0, Math.PI * 2); ctx.fill();
+
+            let hit = false;
+            aliens.forEach(a => {
+                if (Math.hypot(a.x - b.x, a.y - b.y) < a.radius) {
+                    a.hp -= b.damage;
+                    createExplosion(b.x, b.y, '#00ffff');
+                    hit = true;
+                }
+            });
+
+            if (hit || b.y < -10) bullets.splice(bIdx, 1);
+        }
+
+        // 🔴 طلقات الفضائيين
+        for (let ebIdx = enemyBullets.length - 1; ebIdx >= 0; ebIdx--) {
+            let eb = enemyBullets[ebIdx];
+            eb.x += eb.vx; eb.y += eb.vy;
+
+            ctx.fillStyle = '#ff0055';
+            ctx.beginPath(); ctx.arc(eb.x, eb.y, 4.5, 0, Math.PI * 2); ctx.fill();
+
+            if (Math.hypot(eb.x - shipX, eb.y - shipY) < 16) {
+                takeDamage(12);
+                createExplosion(eb.x, eb.y, '#ff0055');
+                enemyBullets.splice(ebIdx, 1);
+            } else if (eb.y > canvas.height + 20 || eb.x < -20 || eb.x > canvas.width + 20) {
+                enemyBullets.splice(ebIdx, 1);
+            }
+        }
+
+        // 🎁 الهدايا
+        for (let gIdx = gifts.length - 1; gIdx >= 0; gIdx--) {
+            let g = gifts[gIdx]; g.y += g.speed;
+            ctx.fillStyle = g.type === 'main_gun' ? '#00ffff' : '#00ff88';
+            ctx.beginPath(); ctx.arc(g.x, g.y, g.radius, 0, Math.PI * 2); ctx.fill();
+
+            if (Math.hypot(g.x - shipX, g.y - shipY) < g.radius + 20) {
+                if (g.type === 'main_gun') { 
+                    mainGunLevel++; 
+                    gunLevelEl.innerText = `طلقات (Lvl ${mainGunLevel})`; 
+                } else if (g.type === 'shield_repair') { 
+                    shield = Math.min(100, shield + 25); 
+                    shieldBar.style.width = shield + '%'; 
+                }
+                gifts.splice(gIdx, 1);
+            } else if (g.y > canvas.height + 30) gifts.splice(gIdx, 1);
+        }
+
+        // 🛸 الفضائيين
+        for (let aIdx = aliens.length - 1; aIdx >= 0; aIdx--) {
+            let a = aliens[aIdx];
+
+            if (a.type === 'zigzag_saucer') {
+                a.y += a.speed;
+                a.x += Math.sin((a.y + a.sineOffset) * 0.05) * 6;
+            } else if (a.type === 'kamikaze_saucer') {
+                let kdx = shipX - a.x, kdy = shipY - a.y, kdist = Math.hypot(kdx, kdy);
+                a.x += (kdx / kdist) * a.speed;
+                a.y += (kdy / kdist) * a.speed;
+            } else {
+                a.y += a.speed;
+            }
+
+            if (now - a.lastShot > 1100 && a.y > 20 && a.y < shipY - 40) {
+                a.lastShot = now;
+                playSound('enemy_shoot');
+                let angle = Math.atan2(shipY - a.y, shipX - a.x);
+                enemyBullets.push({
+                    x: a.x, y: a.y + 10,
+                    vx: Math.cos(angle) * 5.5,
+                    vy: Math.sin(angle) * 5.5
+                });
+            }
+
+            ctx.save();
+            ctx.translate(a.x, a.y);
+            ctx.fillStyle = a.type === 'kamikaze_saucer' ? '#ff0055' : (a.type === 'heavy_saucer' ? '#ffcc00' : '#00ff88');
+            ctx.beginPath(); ctx.arc(0, -3, a.radius * 0.55, Math.PI, 0); ctx.fill();
+            ctx.fillStyle = a.type === 'heavy_saucer' ? '#8b5cf6' : '#38bdf8';
+            ctx.beginPath(); ctx.ellipse(0, 2, a.radius, a.radius * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+
+            if (Math.hypot(a.x - shipX, a.y - shipY) < a.radius + 15) {
+                takeDamage(20);
+                createExplosion(a.x, a.y, '#ff0055');
+                aliens.splice(aIdx, 1);
+                continue;
+            }
+
+            if (a.hp <= 0) {
+                dropGift(a.x, a.y);
+                createExplosion(a.x, a.y, '#ff0055');
+                aliens.splice(aIdx, 1); score += 30; scoreValEl.innerText = score;
+            } else if (a.y > canvas.height + 60) aliens.splice(aIdx, 1);
+        }
+
+        // 🚀 سفينة Voyager 1
+        ctx.save(); ctx.translate(shipX, shipY);
+        ctx.fillStyle = isSuperLaserActive ? '#ff00d8' : '#00ffff'; 
+        ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ff0055'; ctx.fillRect(-3, 8, 6, 8);
+        ctx.restore();
+
+        ctx.restore();
+        requestAnimationFrame(gameLoop);
+    }
+</script>
+</body>
+</html>
